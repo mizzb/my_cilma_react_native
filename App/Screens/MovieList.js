@@ -23,8 +23,10 @@ var height = Dimensions.get('window').height; //full height
 export default class MovieList extends React.Component {
   constructor(props) {
     super(props);
+    if (Object.keys(this.props.navigation.state.params.movie).length === 0) {
+      this.props.navigation.goBack();
+    }
     this._onLogoPressed = this._onLogoPressed.bind(this);
-    //this.handleLogoutClick = this.handleLogoutClick.bind(this);
     this.movie = undefined;
   }
 
@@ -35,7 +37,7 @@ export default class MovieList extends React.Component {
 
   render() {
     this.movie = this.props.navigation.state.params.movie;
-
+    console.log(this.props.navigation.state);
     return (
       <SafeAreaView>
         <ScrollView style={styles.scrollView}>

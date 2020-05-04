@@ -79,6 +79,10 @@ target 'myCilma' do
   pod 'RNGestureHandler', :podspec => '../node_modules/react-native-gesture-handler/RNGestureHandler.podspec'
 
 
+  pod 'RNAWSCognito', :path => '../node_modules/amazon-cognito-identity-js'
+
+  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
+
   target 'myCilmaTests' do
     inherit! :complete
     # Pods for testing

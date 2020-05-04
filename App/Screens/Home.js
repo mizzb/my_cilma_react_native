@@ -15,30 +15,60 @@ import {
 } from 'react-native';
 import {PacmanIndicator} from 'react-native-indicators';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faFilm} from '@fortawesome/free-solid-svg-icons';
+import {faBars, faFilm, faSignOutAlt} from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import Geolocation from '@react-native-community/geolocation';
 import Colors from '../Theme/Colors';
+import {Auth} from 'aws-amplify';
 
 const width = Dimensions.get('window').width; //full width
 const height = Dimensions.get('window').height; //full height
+var self;
 
-export default class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      movieDetails: '',
-      searchString: '',
-      isLoading: false,
-    };
+class Home extends Component {
+  state = {
+    movieDetails: '',
+    searchString: '',
+    isLoading: false,
+    initialPosition: 'unknown',
+    lastPosition: 'unknown',
+  };
+
+  watchID: ?number = null;
+  getLocation() {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const initialPosition = JSON.stringify(position);
+        console.log(initialPosition);
+        this.setState({initialPosition});
+      },
+      (error) => {
+        console.log('ERROR:' + error.toString());
+        Alert.alert('Error', 'My Cilma requires your Locations');
+        this.getLocation();
+      },
+      {enableHighAccuracy: true, timeout: 20000},
+    );
+  }
+
+  componentDidMount() {
+    this.getLocation();
+    this.watchID = Geolocation.watchPosition((position) => {
+      const lastPosition = JSON.stringify(position);
+      this.setState({lastPosition});
+      //console.log(lastPosition);
+    });
+    this.props.navigation.setParams({onLogout: this._onSignOut});
+  }
+
+  componentWillUnmount() {
+    this.watchID != null && Geolocation.clearWatch(this.watchID);
   }
 
   goForFetch = (movieToSearch) => {
     const searchApi =
       'http://bournetechnicals.com/my-cilma/?api_key=1053ed93e54449fca1076a8b07b85803&name=' +
       movieToSearch;
-
-    //const searchApi = 'http://www.google.com/home';
-    console.log(searchApi);
     axios
       .get(searchApi)
       .then((response) => {
@@ -73,14 +103,33 @@ export default class Home extends Component {
     }
   };
 
+  _onSignOut = async () => {
+    try {
+      await Auth.signOut();
+      this.props.navigation.navigate('AppAuth');
+    } catch (err) {
+      console.log('error signing out...', err);
+    }
+  };
+
   render() {
-    const spinner = this.state.isLoading ? (
+    const showSearch = this.state.isLoading ? (
       <PacmanIndicator color="black" />
-    ) : null;
+    ) : (
+      <Button
+        title="GO"
+        color="#c4c0b3"
+        onPress={this._onSearchPressed}
+        disabled={this.state.isLoading || this.state.searchString === ''}
+        style={styles.searchBtn}
+      />
+    );
 
     return (
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView style={styles.scrollView}>
+        <ScrollView
+          style={styles.scrollView}
+          keyboardShouldPersistTaps="handled">
           <View style={styles.container}>
             <FontAwesomeIcon
               icon={faFilm}
@@ -97,18 +146,8 @@ export default class Home extends Component {
                 placeholder="Your movie here !"
               />
             </View>
-            {spinner}
-            <View style={styles.buttonView}>
-              <Button
-                title="GO"
-                color="#c4c0b3"
-                onPress={this._onSearchPressed}
-                disabled={
-                  this.state.isLoading || this.state.searchString === ''
-                }
-                style={styles.searchBtn}
-              />
-            </View>
+            <View style={styles.buttonView}>{showSearch}</View>
+
             <View style={styles.mansionView}>
               <Text style={styles.mansion}>
                 Powered by Mansionites! A quarantine product
@@ -121,7 +160,46 @@ export default class Home extends Component {
   }
 }
 
+Home.navigationOptions = (navData) => {
+  return {
+    // headerLeft: () => {
+    //   return (
+    //     <FontAwesomeIcon
+    //       icon={faBars}
+    //       color={Colors.white}
+    //       style={styles.barStyle}
+    //       onPress={() => {
+    //         navData.navigation.toggleDrawer();
+    //       }}
+    //     />
+    //   );
+    // },
+
+    headerRight: () => {
+      return (
+        <FontAwesomeIcon
+          icon={faSignOutAlt}
+          color={Colors.white}
+          style={styles.barStyle}
+          onPress={() => {
+            console.log(navData.navigation.getParam('onLogout')());
+          }}
+        />
+      );
+    },
+  };
+};
+
 const styles = StyleSheet.create({
+  barStyle: {
+    padding: 0,
+    margin: 10,
+  },
+  loader: {
+    width: '100%',
+    flex: 1,
+    flexDirection: 'row',
+  },
   safeArea: {flex: 1},
   container: {
     flex: 1,
@@ -170,3 +248,5 @@ const styles = StyleSheet.create({
       Platform.OS === 'android' ? 'sansationLight' : 'Sansation-Light',
   },
 });
+
+export default Home;

@@ -1,0 +1,121 @@
+{
+	"name": "myCilma-2020-04-25-16-52-10",
+	"projectId": "2d4459bf-31b7-46f3-b0d4-762aea932ae1",
+	"region": "ap-south-1",
+	"state": "NORMAL",
+	"createdDate": "2020-04-25T11:22:17.413Z",
+	"lastUpdatedDate": "2020-04-27T11:51:57.344Z",
+	"consoleUrl": "https://console.aws.amazon.com/mobilehub/home#/2d4459bf-31b7-46f3-b0d4-762aea932ae1/build",
+	"resources": [
+		{
+			"type": "AWS::Pinpoint::AnalyticsApplication",
+			"name": "mycilma20200425165210_MobileHub",
+			"arn": "6d883408a36444d8a3ea44c015b80a4f",
+			"feature": "analytics",
+			"attributes": {
+				"lastUpdateRequestID": "f4d65f97-1625-420a-833f-4edb03067659"
+			}
+		},
+		{
+			"type": "AWS::IAM::Policy",
+			"name": "mycilma_mobileanalytics_MOBILEHUB_1867885737",
+			"arn": null,
+			"feature": "analytics",
+			"attributes": {
+				"authType": "authenticated",
+				"lastUpdateRequestID": "45de6b06-bbad-4ff4-9aad-0d4ed1b6a426",
+				"role": "mycilma_auth_MOBILEHUB_1867885737"
+			}
+		},
+		{
+			"type": "AWS::IAM::Policy",
+			"name": "mycilma_mobileanalytics_MOBILEHUB_1867885737",
+			"arn": null,
+			"feature": "analytics",
+			"attributes": {
+				"authType": "unauthenticated",
+				"lastUpdateRequestID": "45de6b06-bbad-4ff4-9aad-0d4ed1b6a426",
+				"role": "mycilma_unauth_MOBILEHUB_1867885737"
+			}
+		},
+		{
+			"type": "AWS::Cognito::IdentityPool",
+			"name": "mycilma_MOBILEHUB_1867885737",
+			"arn": "ap-south-1:a337a902-8ae3-484f-8010-2ad4510c6b28",
+			"feature": "user-signin",
+			"attributes": {
+				"lastUpdateRequestID": "06f2b108-9a59-4c96-b866-2993c5b331e1",
+				"poolid": "ap-south-1:a337a902-8ae3-484f-8010-2ad4510c6b28",
+				"roleARNs": "arn:aws:iam::631803548647:role/mycilma_auth_MOBILEHUB_1867885737,arn:aws:iam::631803548647:role/mycilma_unauth_MOBILEHUB_1867885737"
+			}
+		},
+		{
+			"type": "AWS::IAM::Role",
+			"name": "mycilma_smsverification_MOBILEHUB_1867885737",
+			"arn": "arn:aws:iam::631803548647:role/service-role/mycilma_smsverification_MOBILEHUB_1867885737",
+			"feature": "user-signin",
+			"attributes": {
+				"lastUpdateRequestID": "06f2b108-9a59-4c96-b866-2993c5b331e1",
+				"user-pools-role-key": "user-pools-execution-role"
+			}
+		},
+		{
+			"type": "AWS::Cognito::UserPool",
+			"name": "mycilma_userpool_MOBILEHUB_1867885737",
+			"arn": "ap-south-1_W2Vl0PYiu",
+			"feature": "user-signin",
+			"attributes": {
+				"alias-attributes": "[\"email\",\"phone_number\"]",
+				"lastUpdateRequestID": "06f2b108-9a59-4c96-b866-2993c5b331e1",
+				"mfa-configuration": "ON",
+				"password-policy": "{\"minimumLength\":8,\"requireUppercase\":true,\"requireLowercase\":true,\"requireNumbers\":true,\"requireSymbols\":true,\"temporaryPasswordValidityDays\":7}",
+				"region": "ap-south-1",
+				"user-pools-client-id": "50l088vi4mal10q0fp304vovfc",
+				"user-pools-client-secret": "2lc2rvbqdqcfufpf9o51kd2gte3k0b1vef5vogldht0p611occo",
+				"user-pools-id": "ap-south-1_W2Vl0PYiu",
+				"user-pools-web-client-id": "7uj8n9ima32g6j784jgesq7hm2"
+			}
+		},
+		{
+			"type": "AWS::IAM::Role",
+			"name": "mycilma_auth_MOBILEHUB_1867885737",
+			"arn": "arn:aws:iam::631803548647:role/mycilma_auth_MOBILEHUB_1867885737",
+			"feature": "user-signin",
+			"attributes": {
+				"authType": "authenticated",
+				"lastUpdateRequestID": "06f2b108-9a59-4c96-b866-2993c5b331e1"
+			}
+		},
+		{
+			"type": "AWS::IAM::Role",
+			"name": "mycilma_unauth_MOBILEHUB_1867885737",
+			"arn": "arn:aws:iam::631803548647:role/mycilma_unauth_MOBILEHUB_1867885737",
+			"feature": "user-signin",
+			"attributes": {
+				"authType": "unauthenticated",
+				"lastUpdateRequestID": "f4d65f97-1625-420a-833f-4edb03067659"
+			}
+		},
+		{
+			"type": "AWS::S3::Bucket",
+			"name": "mycilma-deployments-mobilehub-1867885737",
+			"arn": null,
+			"feature": "common",
+			"attributes": {
+				"region": "ap-south-1",
+				"s3-bucket-console-url": "https://s3.console.aws.amazon.com/s3/buckets/mycilma-deployments-mobilehub-1867885737"
+			}
+		},
+		{
+			"type": "AWS::CloudFormation::Stack",
+			"name": "Development",
+			"arn": null,
+			"feature": "cloud-api",
+			"attributes": {
+				"primary": "true",
+				"region": "ap-south-1",
+				"stateSummary": "NOT_YET_DEPLOYED"
+			}
+		}
+	]
+}

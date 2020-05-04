@@ -1,4 +1,3 @@
-
 # Android/IntelliJ
 #
 android/build/
@@ -20,3 +19,12 @@ yarn-error.log
 # IntelliJ project files
 out
 gen
+
+#awsmobilejs
+appsync-info.json
+aws-info.json
+project-info.json
+aws-exports.*
+awsmobilejs/.awsmobile/backend-build
+awsmobilejs/\#current-backend-info
+~awsmobilejs-*/
