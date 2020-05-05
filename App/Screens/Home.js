@@ -3,6 +3,7 @@
 import React, {Component} from 'react';
 import {
   Alert,
+  AsyncStorage,
   Button,
   Dimensions,
   Platform,
@@ -15,26 +16,29 @@ import {
 } from 'react-native';
 import {PacmanIndicator} from 'react-native-indicators';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faBars, faFilm, faSignOutAlt} from '@fortawesome/free-solid-svg-icons';
+import {faFilm, faSignOutAlt} from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import Geolocation from '@react-native-community/geolocation';
 import Colors from '../Theme/Colors';
 import {Auth} from 'aws-amplify';
-
+import Autosuggest from 'react-autosuggest';
 const width = Dimensions.get('window').width; //full width
 const height = Dimensions.get('window').height; //full height
-var self;
 
 class Home extends Component {
   state = {
     movieDetails: '',
     searchString: '',
+    value: '',
+    suggestions: [],
     isLoading: false,
     initialPosition: 'unknown',
     lastPosition: 'unknown',
+    token: null,
   };
 
   watchID: ?number = null;
+
   getLocation() {
     Geolocation.getCurrentPosition(
       (position) => {
@@ -51,19 +55,42 @@ class Home extends Component {
     );
   }
 
+  /* ======================================== */
+  /* ========== LIFE CYCLE METHODS ========== */
+  /* ======================================== */
+
   componentDidMount() {
     this.getLocation();
     this.watchID = Geolocation.watchPosition((position) => {
       const lastPosition = JSON.stringify(position);
       this.setState({lastPosition});
-      //console.log(lastPosition);
     });
+
     this.props.navigation.setParams({onLogout: this._onSignOut});
+
+    this._getToken();
   }
 
   componentWillUnmount() {
     this.watchID != null && Geolocation.clearWatch(this.watchID);
   }
+
+  _getToken = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@Access_token');
+      if (value !== null) {
+        this.setState({token: value});
+      } else {
+        this._onSignOut();
+      }
+    } catch (e) {
+      this._onSignOut();
+    }
+  };
+
+  /* ======================================== */
+  /* ========== --- API CALLS ---- ========== */
+  /* ======================================== */
 
   goForFetch = (movieToSearch) => {
     const searchApi =
@@ -88,6 +115,28 @@ class Home extends Component {
       });
   };
 
+  getMovieSuggestions = (query) => {
+    console.log(query);
+    console.log(this.state.token);
+    const api = 'http://bournetechnicals.com/autocomplete/?q=' + query;
+    axios
+      .get(api, {api_key: this.state.token})
+      .then((response) => {
+        console.log('Response:' + response);
+        this.setState({isLoading: false});
+        return response;
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({isLoading: false});
+        return null;
+      });
+  };
+
+  /* ======================================== */
+  /* ========== - OTHER METHODS - ========== */
+  /* ======================================== */
+
   _onSearchTextChanged = (event) => {
     this.setState({searchString: event.nativeEvent.text});
   };
@@ -106,11 +155,52 @@ class Home extends Component {
   _onSignOut = async () => {
     try {
       await Auth.signOut();
+      try {
+        const keys = ['@Access_token', '@Id_token', '@Refresh_token'];
+        await AsyncStorage.multiRemove(keys);
+      } catch (e) {
+        console.log('Error removing Tokens', e);
+      }
       this.props.navigation.navigate('AppAuth');
     } catch (err) {
       console.log('error signing out...', err);
     }
   };
+
+  /* ========================== */
+
+  onSuggestionsFetchRequested = ({value}) => {
+    this.loadSuggestions(value);
+  };
+
+  onSuggestionsClearRequested = () => {
+    this.setState({
+      suggestions: [],
+    });
+  };
+
+  loadSuggestions(value) {
+    this.setState({
+      isLoading: true,
+      suggestions: this.getMovieSuggestions(value),
+    });
+  }
+
+  onChange = (event, {newValue}) => {
+    this.setState({
+      value: newValue,
+    });
+  };
+
+  getSuggestionValue(suggestion) {
+    return suggestion.name;
+  }
+
+  renderSuggestion(suggestion) {
+    return <span>{suggestion.name}</span>;
+  }
+
+  /* ========================== */
 
   render() {
     const showSearch = this.state.isLoading ? (
@@ -124,6 +214,13 @@ class Home extends Component {
         style={styles.searchBtn}
       />
     );
+
+    const {value, suggestions} = this.state;
+    const inputProps = {
+      placeholder: 'Search for movie',
+      value,
+      onChange: this.onChange,
+    };
 
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -144,6 +241,15 @@ class Home extends Component {
                 onChange={this._onSearchTextChanged}
                 placeholderTextColor="#143309"
                 placeholder="Your movie here !"
+              />
+
+              <Autosuggest
+                suggestions={suggestions}
+                onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                getSuggestionValue={this.getSuggestionValue}
+                renderSuggestion={this.renderSuggestion}
+                inputProps={inputProps}
               />
             </View>
             <View style={styles.buttonView}>{showSearch}</View>
@@ -240,8 +346,8 @@ const styles = StyleSheet.create({
     //alignSelf: 'stretch',
   },
   mansionView: {
-    position: 'absolute', //Here is the trick
-    bottom: 100,
+    position: 'absolute',
+    bottom: 40,
   },
   mansion: {
     fontFamily:
