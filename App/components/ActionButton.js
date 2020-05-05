@@ -1,5 +1,13 @@
 import React from 'react';
-import {TouchableHighlight, Text, View, StyleSheet} from 'react-native';
+import {
+  TouchableHighlight,
+  Text,
+  View,
+  StyleSheet,
+  Platform,
+} from 'react-native';
+import Colors from '../Theme/Colors.js';
+
 
 const ActionButton = ({onPress, title}) => (
   <TouchableHighlight
@@ -14,8 +22,8 @@ const ActionButton = ({onPress, title}) => (
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    backgroundColor: '#ffb100',
-    borderRadius: 25,
+    backgroundColor: Colors.primaryColor,
+    borderRadius: 10,
   },
   button: {
     height: 50,
@@ -25,7 +33,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 20,
-    fontFamily: 'SourceSansPro-SemiBold',
+    fontFamily:
+      Platform.OS === 'android' ? 'sansationLight' : 'Sansation-Light',
   },
 });
 

@@ -1,12 +1,5 @@
 import React, {Component} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faFilm} from '@fortawesome/free-solid-svg-icons';
+import {SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
 
 export default class WishList extends Component {
   constructor(props) {
@@ -25,7 +18,7 @@ export default class WishList extends Component {
       <SafeAreaView>
         <ScrollView keyboardShouldPersistTaps="handled">
           <View>
-            <FontAwesomeIcon icon={faFilm} size={50} />
+            <Text>Coming soon</Text>
           </View>
         </ScrollView>
       </SafeAreaView>

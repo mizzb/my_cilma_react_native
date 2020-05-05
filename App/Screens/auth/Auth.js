@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Dimensions,
-  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -14,8 +13,8 @@ import SignUp from './SignUp';
 import ForgotPassword from './ForgotPassword';
 import {faFilm} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {Auth as AmplifyAuth} from '@aws-amplify/auth/lib-esm/Auth';
-
+import {Auth as AmplifyAuth} from 'aws-amplify';
+import Colors from '../../Theme/Colors.js';
 const {width} = Dimensions.get('window');
 
 class Auth extends React.Component {
@@ -72,6 +71,7 @@ class Auth extends React.Component {
         {showForgotPassword && (
           <ForgotPassword toggleAuthType={this.toggleAuthType} />
         )}
+
         <View style={{position: 'absolute', bottom: 40}}>
           {showSignUp || showForgotPassword ? (
             <Text style={styles.bottomMessage}>
@@ -111,21 +111,25 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     marginTop: 15,
-    fontFamily: 'SourceSansPro-SemiBold',
-    color: '#e19f51',
+    marginBottom: 15,
+    fontFamily:
+      Platform.OS === 'android' ? 'sansationLight' : 'Sansation-Light',
+    color: Colors.primaryColor,
   },
   subtitle: {
     fontSize: 20,
     marginBottom: 20,
-    color: 'rgba(0, 0, 0, .75)',
-    fontFamily: 'SourceSansPro-Regular',
+    color: Colors.primaryColor,
+    fontFamily:
+      Platform.OS === 'android' ? 'sansationLight' : 'Sansation-Light',
   },
   bottomMessage: {
-    fontFamily: 'SourceSansPro-Regular',
+    fontFamily:
+      Platform.OS === 'android' ? 'sansationLight' : 'Sansation-Light',
     fontSize: 18,
   },
   bottomMessageHighlight: {
-    color: '#f4a63b',
+    color: Colors.primaryColor,
     paddingLeft: 10,
   },
 });
